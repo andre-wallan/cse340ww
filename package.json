@@ -1,0 +1,15 @@
+{
+  "name": "w01-site-creation",
+  "version": "1.0.0",
+  "description": "W01 Site Creation project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Andrew Allan Ssemanda",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ejs": "^3.1.9"
+  }
+}
