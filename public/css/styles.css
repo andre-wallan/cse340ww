@@ -1,5 +1,121 @@
+/* Base */
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f9fafb;
-  color: #1f2933;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: #fff;
+}
+
+/* Checker border */
+.home {
+  border-left: 20px solid;
+  border-right: 20px solid;
+  border-image: repeating-linear-gradient(
+    black 0 10px,
+    white 10px 20px
+  ) 20;
+  padding: 1rem;
+}
+
+/* Header */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  background: #2d2f3a;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.main-nav a {
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  display: block;
+}
+
+.main-nav .active {
+  background: #000;
+}
+
+/* Feature */
+.feature {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-text h3 {
+  color: #00a9c9;
+}
+
+.btn {
+  background: #00a9c9;
+  color: #000;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+/* Upgrades */
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.upgrade-grid a {
+  background: #00a9c9;
+  text-align: center;
+  padding: 0.5rem;
+  color: #000;
+}
+
+/* Reviews */
+.reviews ul {
+  padding-left: 1.2rem;
+}
+
+/* Desktop */
+@media screen and (min-width: 768px) {
+
+  .lower-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  /* Desktop order fix */
+  .reviews {
+    order: 2;
+  }
+
+  .upgrades {
+    order: 1;
+  }
+}
+.reviews {
+  margin-bottom: 1.5rem;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.upgrade-grid a {
+  background-color: #00a9c9;
+  text-align: center;
+  padding: 0.75rem;
+  color: #000;
+}
+
+.upgrade-grid span {
+  display: block;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  color: #1a0dab;
 }
