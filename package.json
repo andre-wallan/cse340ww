@@ -1,5 +1,5 @@
 {
-  "name": "cse-motors",
+  "name": "w01-site-creation",
   "version": "1.0.0",
   "description": "CSE Motors dealership website using Express and EJS",
   "main": "app.js",
