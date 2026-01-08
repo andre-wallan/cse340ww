@@ -43,6 +43,9 @@
 	},
 	"homepage": "https://github.com/ljharb/es-define-property#readme",
 	"devDependencies": {
+         "express": "^4.18.2",
+  "ejs": "^3.1.9",
+  "express-ejs-layouts": "^2.5.1",
 		"@ljharb/eslint-config": "^21.1.1",
 		"@ljharb/tsconfig": "^0.2.2",
 		"@types/gopd": "^1.0.3",
@@ -78,4 +81,5 @@
 			".github/workflows"
 		]
 	}
+    
 }
