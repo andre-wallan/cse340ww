@@ -1,20 +1,23 @@
 const express = require('express');
 const path = require('path');
+const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set view engine
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layouts/main');
 
-// Static files
+// Middleware
+app.use(expressLayouts);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', require('./routes/index'));
 
-// Start server
+// Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
