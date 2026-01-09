@@ -1,6 +1,5 @@
 /* ******************************************
- * This server.js file is the primary file of the
- * application. It is used to control the project.
+ * Primary Server File
  *******************************************/
 
 /* ***********************
@@ -8,13 +7,25 @@
  *************************/
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const flash = require("connect-flash");
+const pgSession = require("connect-pg-simple")(session);
+const messages = require("express-messages");
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-app.use('/', require('./routes/index'));
 
+/* ***********************
+ * App Initialization (MUST BE FIRST)
+ *************************/
 const app = express();
+
+/* ***********************
+ * Local Modules
+ *************************/
 const indexRoutes = require("./routes/index");
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
@@ -22,12 +33,6 @@ const accountRoute = require("./routes/accountRoute");
 const errorRoute = require("./routes/errorRoute");
 const utilities = require("./utilities/");
 const pool = require("./database/");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const flash = require("connect-flash");
-const pgSession = require("connect-pg-simple")(session);
-const messages = require("express-messages");
 
 /* ***********************
  * Middleware
@@ -54,17 +59,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// Cookie Parser
+// Parsers
 app.use(cookieParser());
-
-// Body Parser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // JWT Token Validation
 app.use(utilities.checkJWTToken);
 
-// Populate Navigation for All Responses
+// Navigation middleware
 app.use(async (req, res, next) => {
   try {
     res.locals.nav = await utilities.getNav();
@@ -74,11 +77,11 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Serve Static Files
-app.use(express.index("public"));
+// Static Files
+app.use(express.static("public"));
 
 /* ***********************
- * View Engine and Templates
+ * View Engine
  *************************/
 app.set("view engine", "ejs");
 app.use(expressLayouts);
@@ -87,34 +90,30 @@ app.set("layout", "./layouts/layout");
 /* ***********************
  * Routes
  *************************/
-// Public Routes
+app.use("/", indexRoutes);
 app.get("/", utilities.handleErrors(baseController.buildHome));
 app.use("/account", accountRoute);
-
-// Restricted Routes
 app.use("/inv", inventoryRoute);
+app.use("/error", errorRoute);
 
 // Test Route
 app.get("/account/test", (req, res) => {
   res.send("Account test route is working");
 });
 
-// Intentional Error Route
-app.use("/error", errorRoute);
-
-// Flash Test Route
+// Flash Test
 app.get("/test-flash", (req, res) => {
   req.flash("success", "Flash message is working!");
   res.redirect("/account/login");
 });
 
-// 404 Not Found Route - Must Be Last
+// 404 Handler
 app.use((req, res, next) => {
   next({ status: 404, message: "Sorry, we appear to have lost that page." });
 });
 
 /* ***********************
- * Express Error Handler
+ * Error Handler
  *************************/
 app.use((err, req, res, next) => {
   console.error(`Error at "${req.originalUrl}": ${err.message}`);
@@ -128,9 +127,8 @@ app.use((err, req, res, next) => {
 /* ***********************
  * Server Configuration
  *************************/
-const port = process.env.PORT || 5000; // Default port is 5432
-const host = process.env.HOST || "localhost";
+const port = process.env.PORT || 10000;
 
 app.listen(port, () => {
-  console.log(`Server is running at http://${host}:${port}`);
+  console.log(`Server running on port ${port}`);
 });
