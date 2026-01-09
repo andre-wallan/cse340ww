@@ -8,9 +8,14 @@
  *************************/
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
-const dotenv = require("dotenv").config();
+
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+app.use('/', require('./routes/index'));
+
 const app = express();
-const staticRoutes = require("./routes/static");
+const indexRoutes = require("./routes/index");
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
@@ -70,7 +75,7 @@ app.use(async (req, res, next) => {
 });
 
 // Serve Static Files
-app.use(express.static("public"));
+app.use(express.index("public"));
 
 /* ***********************
  * View Engine and Templates
