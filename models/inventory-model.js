@@ -1,5 +1,5 @@
 const { body, validationResult } = require("express-validator");
-const invModel = require("../models")
+const utilities = require("../utilities")
 const { getClassifications } = require("../models/inventory-model");
 /**
  * Validation rules for new inventory
