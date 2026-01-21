@@ -1,6 +1,6 @@
 {
   "name": "w01-site-creation",
-  "version": "1.0.0",
+  "version": "22.22.0",
   "description": "CSE Motors dealership website using Express and EJS",
   "main": "app.js",
   "scripts": {
@@ -25,6 +25,6 @@
     "nodemon": "^3.1.0"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }
