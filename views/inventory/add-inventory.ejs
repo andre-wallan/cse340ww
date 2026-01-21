@@ -1,0 +1,60 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="validation-notice">
+    <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>    
+    <% }) %>
+    </ul>
+<% } %>
+
+<form action="/inv/add-inventory" method="post">
+    <p>ALL FIELDS ARE REQUIRED</p>
+    <label for="classificationList">Classification</label>
+    <%- list %>
+
+    <label for="inv-make">Make</label>
+    <input type="text" id="inv-make" name="inv_make" required 
+    minlength="3" placeholder="min of 3 characters"
+    value="<%= locals.inv_make %>">
+
+    <label for="inv-model">Model</label>
+    <input type="text" id="inv-model" name="inv_model" required 
+    minlength="3" placeholder="min of 3 characters" value="<%= locals.inv_model %>">
+
+    <label for="inv-description">Description</label>
+    <textarea rows="5" cols="40" name="inv_description"  id="inv-description" required><%= locals.inv_description || '' %></textarea>
+
+    <label for="inv-image">Image path</label>
+    <input type="text" id="inv-image" name="inv_image" required value="/images/vehicles/no-image.png">
+
+    <label for="inv-thumbnail">Thumbnail path</label>
+    <input type="text" id="inv-thumbnail" name="inv_thumbnail" required value="/images/vehicles/no-image-tn.png">
+
+    <label for="inv-price">Price</label>
+    <input type="number" id="inv-price" name="inv_price" required 
+    placeholder="decimal or integer"
+    step="0.01" min="0" value="<%= locals.inv_price %>">
+
+    <label for="inv-year">Year</label>
+    <input type="text" id="inv-year" name="inv_year" required 
+    pattern="^\d{4}$" placeholder="4-digit year"
+    value="<%= locals.inv_year %>">
+
+    <label for="inv-miles">Miles</label>
+    <input type="text" id="inv-miles" name="inv_miles" required pattern="^\d+$" value="<%= locals.inv_miles %>"
+    placeholder="digits only">
+
+    <label for="inv-color">Color</label>
+    <input type="text" id="inv-color" name="inv_color" required pattern="^[A-Za-z]+$" value="<%= locals.inv_color %>">
+    
+    <div class="form-button">
+        <button type="submit">Add Vehicle</button>
+    </div>
+</form>
