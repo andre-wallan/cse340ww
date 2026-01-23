@@ -9,6 +9,7 @@
   "author": "Andrew Allan Ssemanda",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "connect-flash": "^0.1.1",
     "connect-pg-simple": "^10.0.0",
