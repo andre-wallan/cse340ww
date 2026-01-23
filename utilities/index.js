@@ -1,4 +1,4 @@
-const invUtil = require("../utilities/inventory-model");
+const invUtil = require("./inventory-validation");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
