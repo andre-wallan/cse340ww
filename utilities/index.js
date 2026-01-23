@@ -3,6 +3,15 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config()
 const Util = {}
 
+function getNav(classifications) {
+    let nav = "<ul>";
+    classifications.forEach(c => {
+        nav += `<li>${c.classification_name}</li>`;
+    });
+    nav += "</ul>";
+    return nav;
+}
+
 /* **
  * Constructs the nav HTML unordered list
  * **/
