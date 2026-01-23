@@ -20,3 +20,21 @@ README.md
 
 #pnpm-lock.yaml file should be ignored as it tends to get so loaded
 pnpm-lock.yaml
+# dependencies
+node_modules/
+
+# env
+.env
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
