@@ -1,62 +1,66 @@
 // Needed Resources
-const express = require("express");
-const router = new express.Router();
-const accountController = require("../controllers/accountController");
-const utilities = require("../utilities/");
-const { registationRules, checkRegData, loginRules, checkLoginData } = require('../utilities/account-validation');
+const express = require("express")
+const router = new express.Router()
+const accountController = require("../controllers/accountController")
+const utilities = require("../utilities/")
+const regValidate = require("../utilities/account-validation")
 
-// Route for when 'My Account' is clicked
-router.get("/login", utilities.handleErrors(accountController.buildLogin));
+// Route to build the login view
+router.get("/login", utilities.handleErrors(accountController.buildLoginView));
 
-// Route for register button
-router.get("/register", utilities.handleErrors(accountController.buildRegistration));
+// Route to build the registration view
+router.get("/register", utilities.handleErrors(accountController.buildRegisterView));
 
-router.get("/account", utilities.checkJWTToken, (req, res) => {
-  if (!res.locals.accountData) {
-    req.flash("notice", "Please log in to access this page.");
-    return res.redirect("/account/login");
-  }
-
-  const title = "My Account";
-  res.render("account/account", {
-    title,
-    nav: res.locals.nav,
-    user: res.locals.accountData,
-  });
-});
-
-// Route for submitting register form
+// Process the registration data
 router.post(
-  '/register',
-  registationRules(),
-  checkRegData,
-  utilities.handleErrors(accountController.registerAccount)
+    "/register", 
+    regValidate.registrationRules(),
+    regValidate.checkRegData,
+    utilities.handleErrors(accountController.registerAccount)
+)
+
+// Process the login attempt
+router.post(
+    "/login",
+    regValidate.loginRules(),
+    regValidate.checkLoginData,
+    utilities.handleErrors(accountController.accountLogin)
+)
+
+//route to build account management view
+router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildAccountManagementView));
+
+// route to access log out process
+router.get("/logout", utilities.handleErrors(accountController.logout));
+
+//route to build account update view
+router.get("/update/:account_id", utilities.handleErrors(accountController.buildAccountUpdateView));
+
+// Process for account update
+router.post(
+  "/update-account",
+  regValidate.updateAccountRules(),
+  regValidate.checkAccountUpdateData,
+  utilities.handleErrors(accountController.updateAccount)
 );
 
-// Process the login request
+// Process for password change
 router.post(
-  "/login",
-  loginRules(),
-  checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
+  "/update-password",
+  regValidate.changePasswordRules(),
+  regValidate.checkPassword,
+  utilities.handleErrors(accountController.changePassword)
 );
 
-// Routes for updating account information
-router.get("/update", utilities.handleErrors(accountController.buildUpdateView));
-router.post("/update", utilities.handleErrors(accountController.updateAccount));
-router.post("/change-password", utilities.handleErrors(accountController.changePassword));
+// route to build nickname view
+router.get("/nickname/:account_id", utilities.handleErrors(accountController.buildNicknameView));
 
-// Route for logout
-router.get("/logout", (req, res) => {
-  res.clearCookie("jwt");
-  res.redirect("/");
-});
+// add/edit nickname process
+router.post(
+  "/edit-nickname",
+  regValidate.nicknameRules(),
+  regValidate.checkNickname,
+  utilities.handleErrors(accountController.changeNickname)
+) 
 
-// Tickets route
-router.get("/tickets", utilities.checkJWTToken, utilities.handleErrors(accountController.buildSubmitTicketView));
-router.post("/tickets", utilities.checkJWTToken, utilities.handleErrors(accountController.submitTicket));
-router.get("/", utilities.checkJWTToken, utilities.handleErrors(accountController.buildUserTicketsView));
-
-router.get("/myTickets", utilities.handleErrors(accountController.buildUserTicketsView));
-
-module.exports = router;
+module.exports = router

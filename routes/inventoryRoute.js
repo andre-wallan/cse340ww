@@ -1,78 +1,66 @@
 // Needed Resources
-const express = require("express");
-const router = new express.Router();
-const invController = require("../controllers/invController");
-const invManagementController = require("../controllers/invManagementController");
-const utilities = require("../utilities");
-const { newInventoryRules, checkUpdateData } = require("../utilities/inventory-validation");
-const { restrictToRoles } = require("../utilities/account-validation");
-const { body } = require("express-validator");
+const express = require("express")
+const router = new express.Router()
+const invController = require("../controllers/invController")
+const utilities = require("../utilities/")
+const invValidate = require("../utilities/inventory-validation")
 
-// ==========================
-// Public Routes
-// ==========================
+// Route to handle intentional 500 error
+router.get("/error", invController.intentionalError);
 
 // Route to build inventory by classification view
-router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
+router.get("/type/:classificationId", invController.buildByClassificationId);
 
-// Route to get inventory as JSON
-router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+// Route to build inventory detail view
+router.get("/detail/:invid", invController.buildDetailView);
 
-// Route to build vehicle page by vehicleId
-router.get("/detail/:invId", utilities.handleErrors(invController.buildByInvId));
+// Route to build inventory management view
+router.get("/", utilities.checkAccountType, utilities.handleErrors(invController.buildManagementView));
 
-// ==========================
-// Restricted Routes - employee/admin
-// ==========================
+// Route to build an add new classification view
+router.get("/add-classification", utilities.checkAccountType, utilities.handleErrors(invController.buildAddClassificationView));
 
-// Route for inventory management page
-router.get("/", restrictToRoles(["Employee", "Admin"]), utilities.handleErrors(invManagementController.buildInvManagement));
+// Route to build an add inventory view
+router.get("/add-inventory", utilities.checkAccountType, utilities.handleErrors(invController.buildAddInventoryView));
 
-// Routes for deleting inventory items
-router.get("/delete/:inv_id", restrictToRoles(["Employee", "Admin"]), utilities.handleErrors(invManagementController.buildDeleteView));
-router.post("/delete", restrictToRoles(["Employee", "Admin"]), utilities.handleErrors(invManagementController.processDelete));
-
-// Route for editing inventory items in management view
-router.get("/edit/:inv_id", restrictToRoles(["Employee", "Admin"]), utilities.handleErrors(invManagementController.editInventoryView));
-
-// Route for updating inventory
+//Process the classification addition
 router.post(
-  "/update",
-  restrictToRoles(["Employee", "Admin"]),
-  newInventoryRules(),
-  checkUpdateData,
-  utilities.handleErrors(invManagementController.updateInventoryResult)
-);
+    "/add-classification", 
+    invValidate.addClassificationRules(),
+    invValidate.checkAddData,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.addClassification));
 
-// Route for adding classification
-router.get(
-  "/add-classification",
-  restrictToRoles(["Employee", "Admin"]),
-  utilities.handleErrors(invManagementController.buildAddClassification)
-);
+//Process the vehicle addition    
 router.post(
-  "/add-classification",
-  restrictToRoles(["Employee", "Admin"]),
-  utilities.handleErrors(invManagementController.addClassResult)
-);
+    "/add-inventory",
+    invValidate.addInventoryRules(),
+    invValidate.checkNewVehicleData,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.addNewVehicle));
 
-// Routes for adding inventory
-router.get("/add-inventory", restrictToRoles(["Employee", "Admin"]), utilities.handleErrors(invManagementController.buildAddInventory));
+router.get("/getInventory/:classification_id", utilities.checkAccountType, utilities.handleErrors(invController.getInventoryJSON))
+
+// Route to build the edit vehicle information view
+router.get("/edit/:inv_id", utilities.checkAccountType, utilities.handleErrors(invController.buildEditVehicleInformation))
+
+//Process the information editing
 router.post(
-  "/add-inventory",
-  restrictToRoles(["Employee", "Admin"]),
-  [
-    body("classification_id").notEmpty().withMessage("Classification is required."),
-    body("inv_make").isLength({ min: 3 }).withMessage("Make must be at least 3 characters long."),
-    body("inv_model").isLength({ min: 3 }).withMessage("Model must be at least 3 characters long."),
-    body("inv_year").matches(/^\d{4}$/).withMessage("Year must be a 4-digit number."),
-    body("inv_price").isFloat({ gt: 0 }).withMessage("Price must be a positive number."),
-    body("inv_miles").isInt({ min: 0 }).withMessage("Mileage must be a valid number."),
-    body("inv_color").notEmpty().withMessage("Color is required."),
-    body("inv_thumbnail").isURL().withMessage("Thumbnail must be a valid URL."),
-    body("inv_image").isURL().withMessage("Image must be a valid URL."),
-  ],
-  utilities.handleErrors(invManagementController.addInventoryResult)
-);
+    "/update/",
+    invValidate.addInventoryRules(),
+    invValidate.checkEditVehicleData,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.updateInventory)
+)
 
-module.exports = router;
+// Route to build the delete confirmation view
+router.get("/delete/:inv_id", utilities.checkAccountType, utilities.handleErrors(invController.buildDeleteView))
+
+// Process the deleting
+router.post(
+    "/delete/",
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.deleteInventory)
+)
+
+module.exports = router
