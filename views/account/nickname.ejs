@@ -1,0 +1,27 @@
+<% if (title) { %>
+    <h1><%= title %></h1>
+    <% } else {
+        res.redirect('/')
+} %>
+    
+    
+<%- messages() %>
+    
+<% if (errors) { %>
+    <ul class="validation-notice">
+    <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>    
+    <% }) %>
+    </ul>
+<% } %>
+
+<form id="nicknameForm" action="/account/edit-nickname" method="post">
+    <label for="account_nickname">Nickname</label>
+    <input type="text" id="account_nickname" name="account_nickname" minlength="3" required value="<%= account_nickname %>">
+
+    <button type="submit">Save Nickname</button>
+
+    <input type="hidden" name="account_id"
+    <% if(locals.account_id) { %> value="<%= locals.account_id %>"
+    <% } %>>
+</form>

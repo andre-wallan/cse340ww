@@ -1,0 +1,27 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="validation-notice">
+    <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>    
+    <% }) %>
+    </ul>
+<% } %>
+
+<h2> Welcome <%= accountData.account_nickname ? accountData.account_nickname : accountData.account_firstname %> </h2>
+
+<p>You're Logged in</p>
+<p><a href="/account/update/<%= accountData.account_id %>">Edit Account Information</a></p>
+<p><a href="/account/nickname/<%= accountData.account_id %>">Add / Edit Nickname</a></p>
+
+<% if (accountData.account_type === "Employee" || accountData.account_type === "Admin") { %> 
+    <h3>Inventory management</h3>
+    <p><a href="/inv/">Manage Inventory</a></p>
+<% } %>

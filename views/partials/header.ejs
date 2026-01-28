@@ -1,16 +1,15 @@
-<header class="site-header">
-  <div class="top-bar">
-    <h1>CSE Motors</h1>
-    <a href="#" class="account-link">My Account</a>
-  </div>
-
-  <nav class="main-nav">
-    <ul>
-      <li><a class="active" href="#">Home</a></li>
-      <li><a href="#">Custom</a></li>
-      <li><a href="#">Sedan</a></li>
-      <li><a href="#">SUV</a></li>
-      <li><a href="#">Truck</a></li>
-    </ul>
-  </nav>
+<header id="top-header">
+    <span class="siteName">
+      <a href="/" title="Return to home page">CSE Motors</a>
+    </span>
+    <div id="tools">
+      <% if (loggedin) { %>
+        <a href="/account" title="Manage Account">
+          Welcome <%= accountData.account_nickname ? accountData.account_nickname : accountData.account_firstname %> <span id="header-slash">|</span> 
+        </a>
+        <a href="/account/logout" title="Click to log out">Logout</a>
+      <% } else { %>
+        <a href="/account/login" title="Click to log in">My Account</a>
+      <% } %>
+    </div>
 </header>

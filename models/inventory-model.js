@@ -1,79 +1,118 @@
-const { body, validationResult } = require("express-validator");
-const utilities = require("../utilities")
-const { getClassifications } = require("../models/inventory-model");
-/**
- * Validation rules for new inventory
- */
-const newInventoryRules = () => [
-  body("inv_make")
-    .trim()
-    .isLength({ min: 3 })
-    .withMessage("Make must be at least 3 characters."),
-  body("inv_model")
-    .trim()
-    .isLength({ min: 3 })
-    .withMessage("Model must be at least 3 characters."),
-  body("inv_year")
-    .isInt({ min: 1900, max: new Date().getFullYear() })
-    .withMessage("Invalid year."),
-  body("inv_description")
-    .trim()
-    .isLength({ min: 10 })
-    .withMessage("Description must be at least 10 characters."),
-  body("inv_price")
-    .isFloat({ min: 0 })
-    .withMessage("Price must be a positive number."),
-  body("inv_miles")
-    .isInt({ min: 0 })
-    .withMessage("Miles must be a non-negative integer."),
-  body("inv_color")
-    .trim()
-    .isLength({ min: 3 })
-    .withMessage("Color must be at least 3 characters."),
-];
+const pool = require("../database/")
 
-/**
- * Middleware to check data for new inventory
- */
-const checkInventoryData = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const classifications = await getClassifications();
-    return res.render("inventory/add-inventory", {
-      title: "Add New Inventory",
-      classifications: classifications.rows,
-      errors: errors.array(),
-      ...req.body,
-    });
-  }
-  next();
-};
+/* **
+ * Get all classification data 
+ * **/
+async function getClassifications(){
+    return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+}
 
-/**
- * Middleware to check data for updating inventory
- */
-const checkUpdateData = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      try {
-        const classifications = await getClassifications();
-        let nav = await utilities.getNav()
-        return res.render("./inventory/edit-inventory", {
-          title: `Edit ${req.body.inv_make} ${req.body.inv_model}`,
-          nav,
-          classifications: classifications.rows,
-          errors: errors.array(),
-          inv_id: req.body.inv_id,
-          ...req.body,
-        });
-      } catch (err) {
-        console.error("Error in checkUpdateData:", err);
-        req.flash("notice", "An error occurred while fetching classifications.");
-        res.redirect(`/inv/edit/${req.body.inv_id}`);
-      }
-    } else {
-      next();
+/* **
+ * Get all inventory items and classification_name by classification_id
+ * **/
+async function getInventoryByClassificationId(classification_id) { 
+    try {
+        const data = await pool.query(
+            `SELECT * FROM public.inventory AS i
+            JOIN public.classification AS c
+            ON i.classification_id = c.classification_id
+            WHERE i.classification_id = $1`,
+            [classification_id] 
+        )
+        return data.rows
+    } catch (error) {
+        console.error("getclassificationsbyid error " + error)
     }
-  };
+}
 
-module.exports = { newInventoryRules, checkInventoryData, checkUpdateData };
+/* **
+ * Display specific details for each vehicle
+ ** */
+async function getInventoryDetails(inv_id) {
+    try {
+        const info = await pool.query (
+            `SELECT * FROM public.inventory
+            WHERE inv_id = $1`,
+            [inv_id]
+        )
+        return info.rows[0]
+    } catch (error) {
+        console.error("getInventoryDetails error " + error)
+    }
+}
+
+/* **
+ * Add new classification
+ * **/
+async function addClassification(classification_name) {
+    try {
+        const sql = "INSERT INTO classification (classification_name) VALUES ($1) RETURNING *"
+        return await pool.query(sql, [classification_name])
+    } catch (error) {
+        return error.message
+    }
+}
+
+/* **
+ * Add new vehicle
+ * **/
+async function addNewVehicle(inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, classification_id) {
+    try {
+        const sql = "INSERT INTO inventory (inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, classification_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *"
+        return await pool.query(sql, [inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, classification_id])
+    } catch (error) {
+        return error.message
+    }
+} 
+
+/* **
+ * update vehicle information
+ * **/
+async function updateInventory(
+    inv_id,
+    inv_make, 
+    inv_model, 
+    inv_description, 
+    inv_image, 
+    inv_thumbnail, 
+    inv_price, 
+    inv_year, 
+    inv_miles, 
+    inv_color, 
+    classification_id
+) {
+    try {
+        const sql = "UPDATE public.inventory SET inv_make = $1, inv_model = $2, inv_description = $3, inv_image = $4, inv_thumbnail = $5, inv_price = $6, inv_year = $7, inv_miles = $8, inv_color = $9, classification_id = $10 WHERE inv_id = $11 RETURNING *"
+        const data = await pool.query(sql, [
+            inv_make,
+            inv_model,
+            inv_description,
+            inv_image,
+            inv_thumbnail,
+            inv_price,
+            inv_year,
+            inv_miles,
+            inv_color,
+            classification_id,
+            inv_id
+        ])
+        return data.rows[0]
+    } catch (error) {
+        console.error("model error:" + error)
+    }
+} 
+
+/* **
+ * Delete vehicle information
+ * **/
+async function deleteInventoryItem(inv_id) {
+    try {
+        const sql = "DELETE FROM public.inventory WHERE inv_id = $1"
+        const data = await pool.query(sql, [inv_id])
+        return data
+    } catch (error) {
+        console.error("Delete Inventory Error")
+    }
+} 
+
+module.exports = {getClassifications, getInventoryByClassificationId, getInventoryDetails, addClassification, addNewVehicle, updateInventory, deleteInventoryItem}

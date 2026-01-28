@@ -1,15 +1,5 @@
 const pool = require("../database/")
 
-// inventory-controller.js
-const utilities = require("../utilities");
-const invModel = require("../models/inventory-model");
-
-async function showInventoryPage(req, res) {
-    const classifications = await invModel.getClassifications();
-    const nav = utilities.getNav(classifications.rows); // pass data in
-    res.render("inventory/list", { nav, classifications: classifications.rows });
-}
-
 /* **
 * Register new account
 ** */
