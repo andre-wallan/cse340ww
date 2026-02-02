@@ -29,7 +29,7 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET,
   resave: true,
-  saveUniniatialized: true,
+  saveUninitialized: true,
   name: 'sessionId',
 }))
 
@@ -61,7 +61,6 @@ app.use(function(req, res, next){
 /* ***********************
  * View Engine and Templates
  *************************/
-app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout") // not at views root
 
