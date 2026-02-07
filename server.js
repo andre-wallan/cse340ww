@@ -29,7 +29,7 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET,
   resave: true,
-  saveUniniatialized: true,
+  saveUninitialized: true,
   name: 'sessionId',
 }))
 
@@ -98,7 +98,7 @@ app.use(async (err, req, res, next) => {
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT || 5500
+const port = process.env.PORT || 5200
 const host = process.env.HOST || "localhost"
 
 /* ***********************
