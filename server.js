@@ -7,6 +7,7 @@
  *************************/
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
+const path = require('path')
 const env = require("dotenv").config()
 const app = express()
 const static = require("./routes/static")
@@ -61,6 +62,8 @@ app.use(function(req, res, next){
 /* ***********************
  * View Engine and Templates
  *************************/
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout") // not at views root
 
