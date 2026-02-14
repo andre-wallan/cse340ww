@@ -116,21 +116,20 @@ Util.buildClassificationList = async function (classification_id = null) {
  * **/
 Util.checkJWTToken = (req, res, next) => {
   if (req.cookies.jwt) {
-    jwt.verify(
-      req.cookies.jwt,
-      process.env.ACCESS_TOKEN_SECRET,
-      function (err, accountData) {
-        if (err) {
-          req.flash("Please log in")
-          res.clearCookie("jwt")
-          res.locals.loggedin = false
-          return res.redirect("/account/login")
-        }
-        res.locals.accountData = accountData
-        res.locals.loggedin = true
-        next()
-      }
-    )
+    try {
+      const accountData = jwt.verify(
+        req.cookies.jwt,
+        process.env.ACCESS_TOKEN_SECRET
+      )
+      res.locals.accountData = accountData
+      res.locals.loggedin = true
+      next()
+    } catch (err) {
+      req.flash("validation-notice", "Please log in")
+      res.clearCookie("jwt")
+      res.locals.loggedin = false
+      next()
+    }
   } else {
     res.locals.loggedin = false
     next()
