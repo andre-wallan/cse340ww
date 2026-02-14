@@ -88,7 +88,7 @@ async function accountLogin(req, res) {
   const accountData = await accountModel.getAccountByEmail(account_email)
   if (!accountData) {
     req.flash("validation-notice", "Please check your credentials and try again.")
-    res.status(400).render("/account/login", {
+    res.status(400).render("account/login", {
       title: "Login",
       nav,
       errors: null,
@@ -126,9 +126,17 @@ async function accountLogin(req, res) {
       })
     }
   } catch (error) {
-    throw new Error('Access Forbidden')
-  }
+  console.error("Login error:", error)
+  req.flash("validation-notice", "Login failed. Please try again.")
+  return res.status(500).render("account/login", {
+    title: "Login",
+    nav,
+    errors: null,
+  })
 }
+
+  }
+
 
 // build log out process
 
