@@ -42,7 +42,7 @@ app.use(utilities.checkJWTToken)
 // app.use((req, res, next) => {
 //   res.locals.loggedin = req.session.loggedin 
 //   res.locals.accountData = req.session.account 
-//   next()
+//   next()~
 // })
 
 // app.use((req, res, next) => {
