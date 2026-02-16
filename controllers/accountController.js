@@ -115,8 +115,7 @@ async function accountLogin(req, res) {
         res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
       }
       return res.redirect("/account/")
-    }
-    else {
+    } else {
       req.flash("validation-notice", "Please check your credentials and try again.")
       res.status(400).render("account/login", {
         title: "Login",
@@ -126,16 +125,15 @@ async function accountLogin(req, res) {
       })
     }
   } catch (error) {
-  console.error("Login error:", error)
-  req.flash("validation-notice", "Login failed. Please try again.")
-  return res.status(500).render("account/login", {
-    title: "Login",
-    nav,
-    errors: null,
-  })
-}
-
+    console.error("Login error:", error)
+    req.flash("validation-notice", "Login failed. Please try again.")
+    return res.status(500).render("account/login", {
+      title: "Login",
+      nav,
+      errors: null,
+    })
   }
+}
 
 
 // build log out process
